@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Sora', sans-serif;
+            background: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo { font-size: 20px; font-weight: 700; }
+        .header-logo span { color: #6366f1; }
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .avatar {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px;
+        }
+        .username { font-size: 14px; color: #a0a0b8; }
+        .logout-btn {
+            padding: 6px 14px;
+            background: rgba(239,68,68,0.15);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 12px;
+            font-family: 'Sora', sans-serif;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover { background: rgba(239,68,68,0.25); }
+
+        /* MAIN */
+        .main { max-width: 800px; margin: 0 auto; padding: 32px 24px; }
+
+        /* STAT KARTOCHKALAR */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 20px;
+            animation: fadeUp 0.5s ease;
+        }
+        .stat-card:first-child { border-color: rgba(99,102,241,0.3); }
+        .stat-label {
+            font-size: 11px;
+            color: #6b6b8a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .stat-value.purple { color: #818cf8; }
+        .stat-sub {
+            font-size: 12px;
+            color: #6b6b8a;
+            margin-top: 4px;
+        }
+
+        /* JADVAL */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .add-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .add-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(99,102,241,0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            color: #6b6b8a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.15s;
+            animation: fadeUp 0.4s ease;
+        }
+        tbody tr:hover { background: rgba(255,255,255,0.03); }
+        tbody td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #d0d0e8;
+        }
+
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 20px;
+            font-size: 12px;
+            color: #a5b4fc;
+        }
+        .amount-cell {
+            font-weight: 600;
+            color: #fff;
+        }
+        .delete-btn {
+            padding: 5px 10px;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+            color: #fca5a5;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .delete-btn:hover { background: rgba(239,68,68,0.25); }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #555570;
+        }
+        .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-state p { margin-bottom: 20px; font-size: 15px; }
+
+        .table-wrap {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-logo">💎 Xarajat<span>Track</span></div>
+    <div class="header-user">
+        <div class="avatar">{{ session['username'][0].upper() }}</div>
+        <span class="username">{{ session['username'] }}</span>
+        <a href="/logout" class="logout-btn">Chiqish</a>
+    </div>
+</header>
+
+<main class="main">
+    <!-- STATISTIKA -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-label">💰 Jami xarajat</div>
+            <div class="stat-value purple">{{ "{:,.0f}".format(total) }}</div>
+            <div class="stat-sub">so'm</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">📋 Yozuvlar soni</div>
+            <div class="stat-value">{{ expenses|length }}</div>
+            <div class="stat-sub">ta xarajat</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">📊 O'rtacha</div>
+            <div class="stat-value">
+                {% if expenses|length > 0 %}
+                    {{ "{:,.0f}".format(total / expenses|length) }}
+                {% else %}0{% endif %}
+            </div>
+            <div class="stat-sub">so'm / xarajat</div>
+        </div>
+    </div>
+
+    <!-- JADVAL -->
+    <div class="section-header">
+        <h2 class="section-title">Xarajatlar tarixi</h2>
+        <a href="/add" class="add-btn">＋ Qo'shish</a>
+    </div>
+
+    <div class="table-wrap">
+        {% if expenses %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Sana</th>
+                    <th>Kategoriya</th>
+                    <th>Miqdor</th>
+                    <th>Izoh</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in expenses %}
+                <tr>
+                    <td>{{ e.date.strftime('%d.%m.%Y') }}</td>
+                    <td><span class="category-badge">{{ e.category }}</span></td>
+                    <td class="amount-cell">{{ "{:,.0f}".format(e.amount) }} so'm</td>
+                    <td>{{ e.description or '—' }}</td>
+                    <td>
+                        <a href="/delete/{{ e.id }}" class="delete-btn"
+                           onclick="return confirm('O\'chirasizmi?')">🗑</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="icon">📭</div>
+            <p>Hali xarajat yo'q</p>
+            <a href="/add" class="add-btn" style="display:inline-flex">＋ Birinchisini qo'shing</a>
+        </div>
+        {% endif %}
+    </div>
+</main>
+</body>
+</html>

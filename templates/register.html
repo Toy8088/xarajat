@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ro'yxatdan o'tish — XarajatTrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Sora', sans-serif; min-height: 100vh; background: #0f0f1a; display: flex; }
+
+        .left-panel {
+            flex: 1; background: linear-gradient(135deg, #1a1a3e 0%, #0f0f1a 100%);
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; padding: 60px; position: relative; overflow: hidden;
+        }
+        .left-panel::before {
+            content: ''; position: absolute; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%);
+            top: 50%; left: 50%; transform: translate(-50%,-50%);
+            border-radius: 50%; animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%,100% { transform: translate(-50%,-50%) scale(1); }
+            50% { transform: translate(-50%,-50%) scale(1.1); }
+        }
+        .brand { position: relative; z-index: 1; text-align: center; }
+        .brand-icon { font-size: 64px; margin-bottom: 16px; display: block; }
+        .brand h1 { font-size: 30px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+        .brand h1 span { color: #a78bfa; }
+        .brand p { color: #6b6b8a; font-size: 14px; line-height: 1.6; max-width: 280px; }
+
+        .steps { position: relative; z-index: 1; margin-top: 40px; display: flex; flex-direction: column; gap: 18px; }
+        .step { display: flex; align-items: flex-start; gap: 12px; }
+        .step-num {
+            width: 26px; height: 26px; min-width: 26px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 11px; font-weight: 700; color: #fff;
+        }
+        .step-text { color: #7b7b9a; font-size: 13px; line-height: 1.5; }
+        .step-text strong { color: #a5b4fc; display: block; margin-bottom: 2px; }
+
+        .right-panel {
+            width: 500px; display: flex; align-items: center; justify-content: center;
+            padding: 40px; background: #0d0d1a; overflow-y: auto;
+        }
+        .form-container { width: 100%; max-width: 400px; animation: fadeUp 0.6s ease; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+        .form-header { margin-bottom: 28px; }
+        .form-header h2 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .form-header p { color: #6b6b8a; font-size: 13px; }
+
+        .alert { padding: 11px 14px; border-radius: 10px; font-size: 13px; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+        .alert-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
+
+        .field { margin-bottom: 18px; }
+        .field label { display: block; color: #7b7b9a; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
+        .field .hint { font-size: 11px; color: #555570; margin-top: 5px; line-height: 1.5; }
+        .field .hint a { color: #818cf8; text-decoration: none; }
+        .field .hint a:hover { color: #a5b4fc; }
+
+        .password-wrap { position: relative; }
+        .password-wrap input { padding-right: 46px; }
+        .eye-btn { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #555570; font-size: 18px; padding: 0; transition: color 0.2s; }
+        .eye-btn:hover { color: #a5b4fc; }
+
+        .strength-bar { margin-top: 7px; height: 3px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
+        .strength-fill { height: 100%; width: 0%; border-radius: 10px; transition: all 0.3s; }
+        .strength-text { font-size: 11px; margin-top: 5px; min-height: 15px; }
+
+        /* Telegram bo'limi */
+        .telegram-box {
+            background: rgba(0,136,204,0.08);
+            border: 1px solid rgba(0,136,204,0.25);
+            border-radius: 14px; padding: 16px; margin-bottom: 18px;
+        }
+        .tg-header {
+            display: flex; align-items: center; gap: 8px;
+            color: #60c8f5; font-size: 13px; font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .tg-steps { display: flex; flex-direction: column; gap: 8px; }
+        .tg-step {
+            display: flex; align-items: flex-start; gap: 10px;
+            color: #7b7b9a; font-size: 12px; line-height: 1.5;
+        }
+        .tg-step-num {
+            width: 20px; height: 20px; min-width: 20px;
+            background: rgba(0,136,204,0.2);
+            border: 1px solid rgba(0,136,204,0.3);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 10px; font-weight: 700; color: #60c8f5;
+        }
+        .tg-step a {
+            color: #60c8f5; text-decoration: none; font-weight: 600;
+            border-bottom: 1px dashed rgba(96,200,245,0.4);
+            transition: color 0.2s;
+        }
+        .tg-step a:hover { color: #93d9f5; }
+        .tg-step span { color: #a5b4fc; font-weight: 600; }
+
+        .tg-warning {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(234,179,8,0.08);
+            border: 1px solid rgba(234,179,8,0.2);
+            border-radius: 8px; padding: 10px 12px;
+            margin-top: 12px; color: #fde047; font-size: 11px; line-height: 1.5;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 10px; color: #fff;
+            font-family: 'Sora', sans-serif; font-size: 14px;
+            outline: none; transition: all 0.2s;
+        }
+        input:focus { border-color: #6366f1; background: rgba(99,102,241,0.07); }
+        input::placeholder { color: #404058; }
+
+        .submit-btn {
+            width: 100%; padding: 13px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff; border: none; border-radius: 10px;
+            font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; margin-top: 6px;
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.35); }
+
+        .divider { text-align: center; color: #3a3a5a; font-size: 12px; margin: 20px 0; position: relative; }
+        .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: rgba(255,255,255,0.06); }
+        .divider::before { left: 0; } .divider::after { right: 0; }
+
+        .login-link {
+            display: block; text-align: center; padding: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px; color: #a0a0c0;
+            text-decoration: none; font-size: 13px; transition: all 0.2s;
+        }
+        .login-link span { color: #818cf8; font-weight: 600; }
+        .login-link:hover { background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.3); }
+
+        @media (max-width: 768px) { .left-panel { display: none; } .right-panel { width: 100%; } }
+    </style>
+</head>
+<body>
+    <!-- CHAP PANEL -->
+    <div class="left-panel">
+        <div class="brand">
+            <span class="brand-icon">✨</span>
+            <h1>Xarajat<span>Track</span></h1>
+            <p>Bir daqiqada hisob oching va moliyangizni nazorat qiling</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-text"><strong>Botga /start yuboring</strong>@xarajattrack_bot ga o'ting</div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-text"><strong>Chat ID oling</strong>@userinfobot dan raqamni oling</div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-text"><strong>Hisob oching</strong>Username, parol va Chat ID kiriting</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- O'NG PANEL -->
+    <div class="right-panel">
+        <div class="form-container">
+            <div class="form-header">
+                <h2>Hisob yarating 🚀</h2>
+                <p>Bepul ro'yxatdan o'ting</p>
+            </div>
+
+            {% if request.args.get('error') %}
+            <div class="alert alert-error">❌ {{ request.args.get('error') }}</div>
+            {% endif %}
+
+            <form method="POST" action="/register">
+                <!-- USERNAME -->
+                <div class="field">
+                    <label>Foydalanuvchi nomi</label>
+                    <input type="text" name="username" placeholder="username" required>
+                </div>
+
+                <!-- PAROL -->
+                <div class="field">
+                    <label>Parol</label>
+                    <div class="password-wrap">
+                        <input type="password" name="password" id="regPass"
+                               placeholder="••••••••" required
+                               oninput="checkStrength(this.value)">
+                        <button type="button" class="eye-btn" onclick="togglePass('regPass',this)">👁</button>
+                    </div>
+                    <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                    <div class="strength-text" id="strengthText" style="color:#555570">Parol kiriting</div>
+                </div>
+
+                <!-- TELEGRAM BO'LIMI -->
+                <div class="telegram-box">
+                    <div class="tg-header">✈️ Telegram bog'lash</div>
+                    <div class="tg-steps">
+                        <div class="tg-step">
+                            <div class="tg-step-num">1</div>
+                            <div>
+                                <a href="https://t.me/xarajattrack_bot" target="_blank">@xarajattrack_bot</a>
+                                ga o'ting va <span>/start</span> yuboring
+                            </div>
+                        </div>
+                        <div class="tg-step">
+                            <div class="tg-step-num">2</div>
+                            <div>
+                                <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a>
+                                ga <span>/start</span> yuboring
+                            </div>
+                        </div>
+                        <div class="tg-step">
+                            <div class="tg-step-num">3</div>
+                            <div>U sizga <span>Chat ID</span> raqam beradi — quyiga kiriting</div>
+                        </div>
+                    </div>
+                    <div class="tg-warning">
+                        ⚠️ <span><strong>/start</strong> yubormasangiz, parol tiklash ishlamaydi!</span>
+                    </div>
+                </div>
+
+                <!-- TELEGRAM CHAT ID -->
+                <div class="field">
+                    <label>Telegram Chat ID</label>
+                    <input type="text" name="telegram_chat_id" placeholder="Masalan: 123456789">
+                    <div class="hint">
+                        Parolni tiklash uchun kerak.
+                        <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> dan oling.
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Hisob yaratish →</button>
+            </form>
+
+            <div class="divider">yoki</div>
+            <a href="/" class="login-link">Hisob bor? <span>Kiring</span></a>
+        </div>
+    </div>
+
+    <script>
+        function togglePass(id, btn) {
+            const inp = document.getElementById(id);
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+            btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+        }
+
+        function checkStrength(v) {
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+            let s = 0;
+            if (v.length >= 6) s++;
+            if (v.length >= 10) s++;
+            if (/[0-9]/.test(v)) s++;
+            if (/[^a-zA-Z0-9]/.test(v)) s++;
+            const lvl = [
+                { p:'0%',   c:'transparent', l:'Parol kiriting',  lc:'#555570' },
+                { p:'25%',  c:'#ef4444',     l:'😟 Juda zaif',   lc:'#fca5a5' },
+                { p:'50%',  c:'#f97316',     l:'😐 O\'rtacha',   lc:'#fdba74' },
+                { p:'75%',  c:'#eab308',     l:'🙂 Yaxshi',      lc:'#fde047' },
+                { p:'100%', c:'#22c55e',     l:'💪 Kuchli!',     lc:'#86efac' },
+            ];
+            fill.style.width = lvl[s].p;
+            fill.style.background = lvl[s].c;
+            text.textContent = lvl[s].l;
+            text.style.color = lvl[s].lc;
+        }
+    </script>
+</body>
+</html>

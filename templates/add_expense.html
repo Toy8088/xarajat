@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xarajat qo'shish</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Sora', sans-serif;
+            background: #0f0f1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+            top: -100px; right: -100px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            animation: fadeUp 0.5s ease;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #6b6b8a;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #a5b4fc; }
+
+        .card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 20px;
+            padding: 32px;
+            backdrop-filter: blur(20px);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            color: #7b7b9a;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Sora', sans-serif;
+            font-size: 14px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #6366f1;
+            background: rgba(99,102,241,0.08);
+        }
+        input::placeholder, textarea::placeholder { color: #444460; }
+        select option { background: #1a1a2e; color: #fff; }
+
+        /* Kategoriya grid */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .cat-item {
+            display: none;
+        }
+        .cat-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 6px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 11px;
+            color: #7b7b9a;
+            text-align: center;
+        }
+        .cat-label .emoji { font-size: 22px; }
+        .cat-item:checked + .cat-label {
+            background: rgba(99,102,241,0.15);
+            border-color: #6366f1;
+            color: #a5b4fc;
+        }
+        .cat-label:hover { border-color: rgba(99,102,241,0.4); color: #a5b4fc; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Sora', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/dashboard" class="back-link">← Dashboard ga qaytish</a>
+
+        <div class="card">
+            <h2 class="card-title">➕ Yangi xarajat</h2>
+
+            <form method="POST">
+                <!-- Yashirin select (kategoriya uchun) -->
+                <input type="hidden" name="category" id="categoryValue" value="🍎 Oziq-ovqat">
+
+                <label>Miqdor (so'm)</label>
+                <input type="number" name="amount" placeholder="0" min="1" required>
+
+                <label>Kategoriya</label>
+                <div class="category-grid">
+                    <input type="radio" name="cat" id="c1" class="cat-item" checked
+                           onchange="document.getElementById('categoryValue').value='🍎 Oziq-ovqat'">
+                    <label for="c1" class="cat-label"><span class="emoji">🍎</span>Oziq-ovqat</label>
+
+                    <input type="radio" name="cat" id="c2" class="cat-item"
+                           onchange="document.getElementById('categoryValue').value='🚗 Transport'">
+                    <label for="c2" class="cat-label"><span class="emoji">🚗</span>Transport</label>
+
+                    <input type="radio" name="cat" id="c3" class="cat-item"
+                           onchange="document.getElementById('categoryValue').value='👕 Kiyim'">
+                    <label for="c3" class="cat-label"><span class="emoji">👕</span>Kiyim</label>
+
+                    <input type="radio" name="cat" id="c4" class="cat-item"
+                           onchange="document.getElementById('categoryValue').value='💊 Sog\'liq'">
+                    <label for="c4" class="cat-label"><span class="emoji">💊</span>Sog'liq</label>
+
+                    <input type="radio" name="cat" id="c5" class="cat-item"
+                           onchange="document.getElementById('categoryValue').value='📚 Ta\'lim'">
+                    <label for="c5" class="cat-label"><span class="emoji">📚</span>Ta'lim</label>
+
+                    <input type="radio" name="cat" id="c6" class="cat-item"
+                           onchange="document.getElementById('categoryValue').value='🎮 O\'yin'">
+                    <label for="c6" class="cat-label"><span class="emoji">🎮</span>O'yin</label>
+
+                    <input type="radio" name="cat" id="c7" class="cat-item"
+                           onchange="document.getElementById('categoryValue').value='🏠 Uy-joy'">
+                    <label for="c7" class="cat-label"><span class="emoji">🏠</span>Uy-joy</label>
+
+                    <input type="radio" name="cat" id="c8" class="cat-item"
+                           onchange="document.getElementById('categoryValue').value='📦 Boshqa'">
+                    <label for="c8" class="cat-label"><span class="emoji">📦</span>Boshqa</label>
+                </div>
+
+                <label>Izoh (ixtiyoriy)</label>
+                <input type="text" name="description" placeholder="Masalan: Toshkent bozori">
+
+                <button type="submit" class="submit-btn">💾 Saqlash</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
