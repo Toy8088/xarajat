@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 
 # =================== TELEGRAM SOZLAMA ===================
 # @BotFather dan olgan tokeningizni shu yerga yozing:
-BOT_TOKEN = '8959451819:AAEhvpUvdqM1Mzuur1R8lZf_m7L8908tZAU'
+BOT_TOKEN = 'Bot_token'
 
 def telegram_otp_yuborish(chat_id, code):
     """Telegramga OTP kod yuboradi"""
