@@ -5,334 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kirish — XarajatTrack</title>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Sora', sans-serif;
-            min-height: 100vh;
-            background: #0f0f1a;
-            display: flex;
-        }
-
-        /* CHAP TOMON — dekorativ panel */
-        .left-panel {
-            flex: 1;
-            background: linear-gradient(135deg, #1a1a3e 0%, #0f0f1a 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 60px;
-            position: relative;
-            overflow: hidden;
-        }
-        .left-panel::before {
-            content: '';
-            position: absolute;
-            width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            animation: pulse 4s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
-        }
-        .brand {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-        }
-        .brand-icon { font-size: 72px; margin-bottom: 20px; display: block; }
-        .brand h1 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 12px;
-        }
-        .brand h1 span { color: #818cf8; }
-        .brand p {
-            color: #6b6b8a;
-            font-size: 15px;
-            line-height: 1.6;
-            max-width: 280px;
-        }
-        .features {
-            position: relative;
-            z-index: 1;
-            margin-top: 48px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #7b7b9a;
-            font-size: 14px;
-        }
-        .feature-icon {
-            width: 36px; height: 36px;
-            background: rgba(99,102,241,0.1);
-            border: 1px solid rgba(99,102,241,0.2);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px;
-        }
-
-        /* O'NG TOMON — login forma */
-        .right-panel {
-            width: 460px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            background: #0d0d1a;
-        }
-        .form-container {
-            width: 100%;
-            max-width: 360px;
-            animation: fadeUp 0.6s ease;
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-header { margin-bottom: 32px; }
-        .form-header h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 6px;
-        }
-        .form-header p { color: #6b6b8a; font-size: 14px; }
-
-        .alert {
-            padding: 12px 14px;
-            border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 20px;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .alert-error {
-            background: rgba(239,68,68,0.1);
-            border: 1px solid rgba(239,68,68,0.25);
-            color: #fca5a5;
-        }
-        .alert-success {
-            background: rgba(34,197,94,0.1);
-            border: 1px solid rgba(34,197,94,0.25);
-            color: #86efac;
-        }
-
-        .field { margin-bottom: 20px; }
-        .field label {
-            display: block;
-            color: #7b7b9a;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        /* Parol inputi wrapper */
-        .password-wrap {
-            position: relative;
-        }
-        .password-wrap input {
-            padding-right: 46px; /* ko'z tugmasi uchun joy */
-        }
-        .eye-btn {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #555570;
-            font-size: 18px;
-            line-height: 1;
-            padding: 0;
-            transition: color 0.2s;
-            user-select: none;
-        }
-        .eye-btn:hover { color: #a5b4fc; }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="number"] {
-            width: 100%;
-            padding: 13px 16px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.09);
-            border-radius: 10px;
-            color: #fff;
-            font-family: 'Sora', sans-serif;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.2s;
-        }
-        input:focus {
-            border-color: #6366f1;
-            background: rgba(99,102,241,0.07);
-        }
-        input::placeholder { color: #404058; }
-
-        .forgot-link {
-            display: block;
-            text-align: right;
-            margin-top: 8px;
-            color: #6366f1;
-            font-size: 12px;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .forgot-link:hover { color: #a5b4fc; }
-
-        .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Sora', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 8px;
-        }
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(99,102,241,0.35);
-        }
-
-        .divider {
-            text-align: center;
-            color: #3a3a5a;
-            font-size: 12px;
-            margin: 24px 0;
-            position: relative;
-        }
-        .divider::before, .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 42%;
-            height: 1px;
-            background: rgba(255,255,255,0.06);
-        }
-        .divider::before { left: 0; }
-        .divider::after { right: 0; }
-
-        .register-link {
-            display: block;
-            text-align: center;
-            padding: 13px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 10px;
-            color: #a0a0c0;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        .register-link span { color: #818cf8; font-weight: 600; }
-        .register-link:hover {
-            background: rgba(99,102,241,0.08);
-            border-color: rgba(99,102,241,0.3);
-        }
-
-        @media (max-width: 768px) {
-            .left-panel { display: none; }
-            .right-panel { width: 100%; }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
-    <!-- CHAP: Brend paneli -->
-    <div class="left-panel">
-        <div class="brand">
-            <span class="brand-icon">💎</span>
-            <h1>Xarajat<span>Track</span></h1>
-            <p>Moliyaviy xarajatlaringizni oson va qulay kuzatib boring</p>
-        </div>
-        <div class="features">
-            <div class="feature-item">
-                <div class="feature-icon">📊</div>
-                <span>Xarajatlar statistikasi</span>
+    <div class="split-layout">
+        <div class="left-panel">
+            <div class="brand">
+                <span class="brand-icon">💎</span>
+                <h1>Xarajat<span>Track</span></h1>
+                <p>Moliyaviy xarajatlaringizni oson va qulay kuzatib boring</p>
             </div>
-            <div class="feature-item">
-                <div class="feature-icon">🔒</div>
-                <span>Xavfsiz va shaxsiy</span>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">⚡</div>
-                <span>Tez va qulay interfeys</span>
+            <div class="features">
+                <div class="feature-item"><div class="feature-icon">📊</div><span>Xarajatlar statistikasi</span></div>
+                <div class="feature-item"><div class="feature-icon">🔒</div><span>Xavfsiz va shaxsiy</span></div>
+                <div class="feature-item"><div class="feature-icon">⚡</div><span>Tez va qulay interfeys</span></div>
             </div>
         </div>
-    </div>
-
-    <!-- O'NG: Login forma -->
-    <div class="right-panel">
-        <div class="form-container">
-            <div class="form-header">
-                <h2>Xush kelibsiz 👋</h2>
-                <p>Davom etish uchun hisobingizga kiring</p>
-            </div>
-
-            {% if request.args.get('error') %}
-            <div class="alert alert-error">❌ {{ request.args.get('error') }}</div>
-            {% endif %}
-            {% if request.args.get('success') %}
-            <div class="alert alert-success">✅ {{ request.args.get('success') }}</div>
-            {% endif %}
-
-            <form method="POST" action="/login">
-                <div class="field">
-                    <label>Foydalanuvchi nomi</label>
-                    <input type="text" name="username" placeholder="username" required>
+        <div class="right-panel">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Xush kelibsiz 👋</h2>
+                    <p>Davom etish uchun hisobingizga kiring</p>
                 </div>
-
-                <div class="field">
-                    <label>Parol</label>
-                    <div class="password-wrap">
-                        <input type="password" name="password" id="loginPass" placeholder="••••••••" required>
-                        <button type="button" class="eye-btn" onclick="togglePass('loginPass', this)">👁</button>
+                {% if request.args.get('error') %}
+                <div class="alert alert-error">❌ {{ request.args.get('error') }}</div>
+                {% endif %}
+                {% if request.args.get('success') %}
+                <div class="alert alert-success">✅ {{ request.args.get('success') }}</div>
+                {% endif %}
+                <form method="POST" action="/login">
+                    <div class="field">
+                        <label>Foydalanuvchi nomi</label>
+                        <input type="text" name="username" placeholder="username" required>
                     </div>
-                    <a href="/forgot-password" class="forgot-link">Parolni unutdingizmi?</a>
-                </div>
-
-                <button type="submit" class="submit-btn">Kirish →</button>
-            </form>
-
-            <div class="divider">yoki</div>
-
-            <a href="/register" class="register-link">
-                Hisob yo'qmi? <span>Ro'yxatdan o'ting</span>
-            </a>
+                    <div class="field">
+                        <label>Parol</label>
+                        <div class="password-wrap">
+                            <input type="password" name="password" id="loginPass" placeholder="••••••••" required>
+                            <button type="button" class="eye-btn" onclick="togglePass('loginPass', this)">👁</button>
+                        </div>
+                        <a href="/forgot-password" style="display:block;text-align:right;margin-top:8px;color:#6366f1;font-size:12px;text-decoration:none;">Parolni unutdingizmi?</a>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Kirish →</button>
+                </form>
+                <div class="divider">yoki</div>
+                <a href="/register" class="btn btn-secondary">Hisob yo'qmi? <span style="color:#818cf8;margin-left:4px;">Ro'yxatdan o'ting</span></a>
+            </div>
         </div>
     </div>
-
     <script>
-        function togglePass(inputId, btn) {
-            const input = document.getElementById(inputId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                btn.textContent = '🙈'; // ko'rinayapti — yopish
-            } else {
-                input.type = 'password';
-                btn.textContent = '👁';  // yashirilgan — ochish
-            }
+        function togglePass(id, btn) {
+            const inp = document.getElementById(id);
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+            btn.textContent = inp.type === 'password' ? '👁' : '🙈';
         }
     </script>
 </body>
