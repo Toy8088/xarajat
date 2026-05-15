@@ -4,19 +4,23 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import random
 import requests as req
+import os
 
 app = Flask(__name__)
-app.secret_key = 'mening_maxfiy_kalitim'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///xarajatlar.db'
+app.secret_key = os.environ.get('SECRET_KEY', 'mening_maxfiy_kalitim')
+
+# PostgreSQL URL ni to'g'rilash
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///xarajatlar.db')
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
 db = SQLAlchemy(app)
 
 # =================== TELEGRAM SOZLAMA ===================
-# @BotFather dan olgan tokeningizni shu yerga yozing:
-BOT_TOKEN = 'Bot_token'
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
 
 def telegram_otp_yuborish(chat_id, code):
-    """Telegramga OTP kod yuboradi"""
     url = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
     matn = (
         f"🔐 *XarajatTrack — Tasdiqlash kodi*\n\n"
@@ -40,7 +44,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
-    telegram_chat_id = db.Column(db.String(50), nullable=True)  # Telegram Chat ID
+    telegram_chat_id = db.Column(db.String(50), nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -57,7 +61,6 @@ class Expense(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 class OTPCode(db.Model):
-    """Vaqtinchalik OTP kodlar jadvali"""
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
     code = db.Column(db.String(6), nullable=False)
@@ -65,7 +68,6 @@ class OTPCode(db.Model):
     used = db.Column(db.Boolean, default=False)
 
     def is_valid(self):
-        """Kod 5 daqiqa ichida va ishlatilmagan bo'lishi kerak"""
         muddati = datetime.utcnow() - timedelta(minutes=5)
         return not self.used and self.created_at > muddati
 
@@ -116,10 +118,8 @@ def logout():
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
-    """1-QADAM: Username kiriting → Telegramga OTP yuboring"""
     if request.method == 'POST':
         username = request.form['username']
-
         user = User.query.filter_by(username=username).first()
 
         if not user:
@@ -128,23 +128,18 @@ def forgot_password():
         if not user.telegram_chat_id:
             return redirect('/forgot-password?error=Bu hisobga Telegram bog\'lanmagan!')
 
-        # 6 xonali tasodifiy kod yasaymiz
         code = str(random.randint(100000, 999999))
 
-        # Eski kodlarni o'chiramiz (xavfsizlik uchun)
         OTPCode.query.filter_by(username=username, used=False).delete()
         db.session.commit()
 
-        # Yangi kodni saqlaymiz
         otp = OTPCode(username=username, code=code)
         db.session.add(otp)
         db.session.commit()
 
-        # Telegramga yuboramiz
         muvaffaqiyat = telegram_otp_yuborish(user.telegram_chat_id, code)
 
         if muvaffaqiyat:
-            # Username ni sessionga saqlaymiz (keyingi sahifada kerak)
             session['reset_username'] = username
             return redirect('/verify-otp')
         else:
@@ -154,8 +149,6 @@ def forgot_password():
 
 @app.route('/verify-otp', methods=['GET', 'POST'])
 def verify_otp():
-    """2-QADAM: Telegramdan kelgan 6 xonali kodni kiriting"""
-    # Session da username bormi?
     if 'reset_username' not in session:
         return redirect('/forgot-password')
 
@@ -164,7 +157,6 @@ def verify_otp():
     if request.method == 'POST':
         entered_code = request.form['code'].strip()
 
-        # Eng so'nggi kodni topamiz
         otp = OTPCode.query.filter_by(
             username=username,
             used=False
@@ -179,11 +171,9 @@ def verify_otp():
         if otp.code != entered_code:
             return redirect('/verify-otp?error=Noto\'g\'ri kod! Qayta urinib ko\'ring.')
 
-        # Kod to'g'ri — ishlatilgan deb belgilaymiz
         otp.used = True
         db.session.commit()
 
-        # Tasdiqlangan deb sessionga yozamiz
         session['otp_verified'] = True
         return redirect('/reset-password')
 
@@ -191,7 +181,6 @@ def verify_otp():
 
 @app.route('/resend-otp')
 def resend_otp():
-    """OTP kodni qayta yuborish"""
     if 'reset_username' not in session:
         return redirect('/forgot-password')
 
@@ -218,7 +207,6 @@ def resend_otp():
 
 @app.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():
-    """3-QADAM: Yangi parol o'rnating"""
     if 'reset_username' not in session or not session.get('otp_verified'):
         return redirect('/forgot-password')
 
@@ -236,7 +224,6 @@ def reset_password():
         user.set_password(new_password)
         db.session.commit()
 
-        # Sessionni tozalaymiz
         session.pop('reset_username', None)
         session.pop('otp_verified', None)
 
