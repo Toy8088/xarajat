@@ -97,16 +97,24 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
+            let userId = null;
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
                 tg.ready();
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                    const userId = tg.initDataUnsafe.user.id;
-                    document.getElementById('telegram_chat_id').value = userId;
-                    document.getElementById('tgManualSteps').style.display = 'none';
-                    document.getElementById('tgField').style.display = 'none';
-                    document.getElementById('tgAutoMsg').style.display = 'block';
+                    userId = tg.initDataUnsafe.user.id;
+                    sessionStorage.setItem('tg_user_id', userId);
                 }
+            }
+            if (!userId) {
+                userId = sessionStorage.getItem('tg_user_id');
+            }
+
+            if (userId) {
+                document.getElementById('telegram_chat_id').value = userId;
+                document.getElementById('tgManualSteps').style.display = 'none';
+                document.getElementById('tgField').style.display = 'none';
+                document.getElementById('tgAutoMsg').style.display = 'block';
             }
         });
     </script>
