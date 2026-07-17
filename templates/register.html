@@ -44,19 +44,22 @@
                         <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
                         <div class="strength-text" id="strengthText" style="color:#555570">Parol kiriting</div>
                     </div>
-                    <div class="telegram-box">
+                    <div class="telegram-box" id="tgBox">
                         <div class="tg-header">✈️ Telegram bog'lash</div>
-                        <div class="tg-steps">
+                        <div id="tgAutoMsg" style="display: none; padding: 10px; background: rgba(34,197,94,0.1); color: #22c55e; border-radius: 8px; font-weight: 600; text-align: center; margin: 10px 0;">
+                            ✅ Telegram ID avtomatik aniqlandi
+                        </div>
+                        <div class="tg-steps" id="tgManualSteps">
                             <div class="tg-step"><div class="tg-step-num">1</div><div><a href="https://t.me/xarajattrack_bot" target="_blank">@xarajattrack_bot</a> ga o'ting va <span>/start</span> yuboring</div></div>
                             <div class="tg-step"><div class="tg-step-num">2</div><div><a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> ga <span>/start</span> yuboring</div></div>
                             <div class="tg-step"><div class="tg-step-num">3</div><div>U sizga <span>Chat ID</span> raqam beradi — quyiga kiriting</div></div>
                         </div>
                         <div class="tg-warning">⚠️ <span><strong>/start</strong> yubormasangiz, parol tiklash ishlamaydi!</span></div>
                     </div>
-                    <div class="field">
+                    <div class="field" id="tgField">
                         <label>Telegram Chat ID</label>
-                        <input type="text" name="telegram_chat_id" placeholder="Masalan: 123456789">
-                        <div class="hint">Parolni tiklash uchun kerak. <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> dan oling.</div>
+                        <input type="text" name="telegram_chat_id" id="telegram_chat_id" placeholder="Masalan: 123456789">
+                        <div class="hint" id="tgHint">Parolni tiklash uchun kerak. <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> dan oling.</div>
                     </div>
                     <button type="submit" class="btn btn-primary">Hisob yaratish →</button>
                 </form>
@@ -65,6 +68,7 @@
             </div>
         </div>
     </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         function togglePass(id, btn) {
             const inp = document.getElementById(id);
@@ -91,6 +95,20 @@
             text.textContent = lvl[s].l;
             text.style.color = lvl[s].lc;
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                tg.ready();
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    const userId = tg.initDataUnsafe.user.id;
+                    document.getElementById('telegram_chat_id').value = userId;
+                    document.getElementById('tgManualSteps').style.display = 'none';
+                    document.getElementById('tgField').style.display = 'none';
+                    document.getElementById('tgAutoMsg').style.display = 'block';
+                }
+            }
+        });
     </script>
 </body>
 </html>
