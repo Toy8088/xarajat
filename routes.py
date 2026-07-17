@@ -1,10 +1,30 @@
-from flask import Blueprint, render_template, request, redirect, session
+from flask import Blueprint, render_template, request, redirect, session, jsonify
 from models import db, User, Expense, OTPCode
-from telegram import send_otp
+from telegram import send_otp, handle_update, set_webhook
+from config import Config
 import random
 
 bp = Blueprint('main', __name__)
 
+# ─── Telegram Webhook ─────────────────────────────────────────────────────────
+@bp.route('/webhook', methods=['POST'])
+def webhook():
+    try:
+        update = request.get_json(force=True)
+        if update:
+            handle_update(update)
+    except Exception as e:
+        print(f"[webhook error] {e}")
+    return jsonify({"ok": True})
+
+@bp.route('/setup-webhook')
+def setup_webhook():
+    """Webhookni o'rnatish — bir marta chaqiriladi"""
+    webhook_url = f"https://toy8088.uz/webhook"
+    result = set_webhook(webhook_url)
+    return jsonify({"ok": result, "url": webhook_url})
+
+# ─── Asosiy sahifalar ─────────────────────────────────────────────────────────
 @bp.route('/')
 def index():
     return render_template('index.html')
@@ -15,11 +35,14 @@ def register():
         username = request.form['username']
         if User.query.filter_by(username=username).first():
             return redirect('/register?error=Bu username band!')
-        user = User(username=username, telegram_chat_id=request.form.get('telegram_chat_id') or None)
+        user = User(
+            username=username,
+            telegram_chat_id=request.form.get('telegram_chat_id') or None
+        )
         user.set_password(request.form['password'])
         db.session.add(user)
         db.session.commit()
-        return redirect('/?success=Ro\'yxatdan o\'tdingiz!')
+        return redirect("/?success=Ro'yxatdan o'tdingiz!")
     return render_template('register.html')
 
 @bp.route('/login', methods=['POST'])
@@ -75,7 +98,7 @@ def forgot_password():
         if not user:
             return redirect('/forgot-password?error=Foydalanuvchi topilmadi!')
         if not user.telegram_chat_id:
-            return redirect('/forgot-password?error=Telegram bog\'lanmagan!')
+            return redirect("/forgot-password?error=Telegram bog'lanmagan!")
         code = str(random.randint(100000, 999999))
         OTPCode.query.filter_by(username=user.username, used=False).delete()
         db.session.add(OTPCode(username=user.username, code=code))
@@ -96,7 +119,7 @@ def verify_otp():
         if not otp or not otp.is_valid():
             return redirect('/verify-otp?error=Kod yaroqsiz!')
         if otp.code != request.form['code'].strip():
-            return redirect('/verify-otp?error=Noto\'g\'ri kod!')
+            return redirect("/verify-otp?error=Noto'g'ri kod!")
         otp.used = True
         db.session.commit()
         session['otp_verified'] = True
