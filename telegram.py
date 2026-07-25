@@ -42,7 +42,7 @@ def admin_keyboard():
     return {
         "keyboard": [
             [{"text": "📱 XarajatTrack Ilovasi", "web_app": {"url": Config.WEBAPP_URL}}],
-            [{"text": "🤖 AI bilan suhbat"}],
+            [{"text": "🤖 AI bilan suhbat"}, {"text": "📈 Trading Robot"}],
             [{"text": "🏠 Bosh menyu"}]
         ],
         "resize_keyboard": True
@@ -149,6 +149,24 @@ def handle_update(update):
             return
         user_states[chat_id] = "AI_CHAT"
         send_message(chat_id, "🚀 *Groq AI (Llama) ishga tushdi!* Savolingizni yozing.\n\n_(Chiqish uchun: 🏠 Bosh menyu)_", admin_keyboard())
+        return
+
+    # Trading Robot menusi
+    if text == "📈 Trading Robot":
+        if not is_admin:
+            send_message(chat_id, "❌ Bu funksiya faqat adminlar uchun.")
+            return
+        
+        # Robot haqida holat xabari
+        bot_msg = (
+            "📈 *AI Trading Robot — Bildirishnomalar Paneli*\n\n"
+            f"Sizning Chat ID raqamingiz: `{chat_id}`\n\n"
+            "Bu ID ni kompyuteringizdagi `robot_settings.json` faylining `telegram_chat_id` qismiga kiritishingiz kerak. "
+            "Shundan so'ng, noutbukingizdagi AI Savdo Roboti barcha ochiq va yopiq orderlar, "
+            "hamda Qizil Xavf (Yangiliklar) haqida to'g'ridan-to'g'ri shu botga jonli xabarlar yuborib turadi!\n\n"
+            "✅ *Aloqa kanali ochiq va tayyor!*"
+        )
+        send_message(chat_id, bot_msg, admin_keyboard())
         return
 
     # AI suhbat holati
